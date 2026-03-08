@@ -60,7 +60,6 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Hero />
-
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-12">
