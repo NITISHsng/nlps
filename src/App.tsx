@@ -4,6 +4,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import SocialSidebar from './components/SocialSidebar';
 
+import { Toaster } from 'react-hot-toast';
+
 const Home = React.lazy(() => import('./pages/Home'));
 const About = React.lazy(() => import('./pages/About'));
 const Academics = React.lazy(() => import('./pages/Academics'));
@@ -19,6 +21,7 @@ const Facilities = React.lazy(() => import('./pages/Facilities'));
 function App() {
   return (
     <Router>
+      <Toaster position="top-right" />
       <div className="flex flex-col min-h-screen relative">
         <SocialSidebar />
         <Header />

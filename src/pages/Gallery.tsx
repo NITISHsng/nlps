@@ -1,81 +1,37 @@
 import { Image as ImageIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
+
+interface GalleryItem {
+  id: string;
+  category: string;
+  title: string;
+  file_url: string;
+}
 
 export default function Gallery() {
-const galleryItems = [
-  {
-    id: 1,
-    category: 'Campus View',
-    title: 'School Building Facade',
-    image: 'https://images.pexels.com/photos/207691/pexels-photo-207691.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 2,
-    category: 'Campus View',
-    title: 'Playground Area',
-    image: 'https://images.pexels.com/photos/1143503/pexels-photo-1143503.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 3,
-    category: 'Classroom Activities',
-    title: 'Interactive Learning Session',
-    image: 'https://images.pexels.com/photos/5212345/pexels-photo-5212345.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 4,
-    category: 'Classroom Activities',
-    title: 'Computer Lab Class',
-    image: 'https://images.pexels.com/photos/256520/pexels-photo-256520.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 5,
-    category: 'Sports Day',
-    title: 'Track and Field Events',
-    image: 'https://images.pexels.com/photos/163444/sport-treadmill-track-race-163444.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 6,
-    category: 'Sports Day',
-    title: 'Team Sports Competition',
-    image: 'https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 7,
-    category: 'Cultural Programs',
-    title: 'Dance Performance',
-    image: 'https://images.pexels.com/photos/1701202/pexels-photo-1701202.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 8,
-    category: 'Cultural Programs',
-    title: 'Music Performance on Stage',
-    image: 'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 9,
-    category: 'Independence Day',
-    title: 'Flag Hoisting Ceremony',
-    image: 'https://images.pexels.com/photos/11059437/pexels-photo-11059437.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 10,
-    category: 'Independence Day',
-    title: 'Patriotic Assembly',
-    image: 'https://images.pexels.com/photos/7713346/pexels-photo-7713346.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 11,
-    category: 'Science Exhibition',
-    title: 'Student Science Projects',
-    image: 'https://images.pexels.com/photos/3913025/pexels-photo-3913025.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 12,
-    category: 'Science Exhibition',
-    title: 'Interactive Experiments',
-    image: 'https://images.pexels.com/photos/7191994/pexels-photo-7191994.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-];
-  const categories = ['All', 'Campus View', 'Classroom Activities', 'Sports Day', 'Cultural Programs', 'Independence Day', 'Science Exhibition'];
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGallery() {
+      const { data, error } = await supabase.from('gallery_items').select('*').order('created_at', { ascending: false });
+      if (data) {
+        setGalleryItems(data);
+      } else if (error) {
+        console.error('Error fetching gallery:', error.message);
+      }
+      setLoading(false);
+    }
+    fetchGallery();
+  }, []);
+
+  const categories = ['All', 'Campus View', 'Classroom Activities', 'Sports Day', 'Cultural Programs', 'Independence Day', 'Science Exhibition', 'Other'];
+  
+  const filteredItems = activeCategory === 'All' 
+    ? galleryItems 
+    : galleryItems.filter(item => item.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-white">
@@ -100,8 +56,8 @@ const galleryItems = [
               {categories.map((category) => (
                 <button
                   key={category}
-                  className="px-4 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105"
-                  defaultChecked={category === 'All'}
+                  onClick={() => setActiveCategory(category)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105 ${activeCategory === category ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 >
                   {category}
                 </button>
@@ -109,24 +65,35 @@ const galleryItems = [
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {galleryItems.map((item) => (
-              <div
-                key={item.id}
-                className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all bg-gray-100"
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                  <p className="text-blue-200 text-sm font-semibold mb-1">{item.category}</p>
-                  <h3 className="text-white font-bold">{item.title}</h3>
+          {loading ? (
+             <div className="flex justify-center items-center py-20">
+               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-900"></div>
+             </div>
+          ) : filteredItems.length === 0 ? (
+             <div className="text-center py-20 text-gray-500">
+               <ImageIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+               <p className="text-xl">No photos available for this category yet.</p>
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {filteredItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all bg-gray-100"
+                >
+                  <img
+                    src={item.file_url}
+                    alt={item.title || 'Gallery Image'}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                    <p className="text-blue-200 text-sm font-semibold mb-1">{item.category}</p>
+                    <h3 className="text-white font-bold">{item.title}</h3>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
