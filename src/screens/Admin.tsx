@@ -193,7 +193,13 @@ export default function Admin() {
   async function loadAdmissionSettings() {
     const { data, error } = await supabase.from('admissions_settings').select('*').limit(1).single();
     if (data) {
-      setAdmissionSettings(data);
+      // Ensure forms is always an array
+      let processedForms = data.forms;
+      if (typeof processedForms === 'string') {
+        try { processedForms = JSON.parse(processedForms); } catch (e) { processedForms = []; }
+      }
+      if (!Array.isArray(processedForms)) processedForms = [];
+      setAdmissionSettings({ ...data, forms: processedForms });
     } else {
       console.warn('Load admissions error:', error?.message);
       const { data: newData, error: insertError } = await supabase.from('admissions_settings').insert({ is_open: false }).select().single();
@@ -555,10 +561,10 @@ export default function Admin() {
                   </div>
 
                   <div className="space-y-3 mb-4">
-                    {(!admissionSettings.forms || admissionSettings.forms.length === 0) && (
+                    {(!Array.isArray(admissionSettings.forms) || admissionSettings.forms.length === 0) && (
                       <p className="text-sm text-gray-500 italic bg-white p-3 rounded border border-dashed text-center">No forms uploaded yet.</p>
                     )}
-                    {(admissionSettings.forms || []).map((form: any, idx: number) => (
+                    {Array.isArray(admissionSettings.forms) && admissionSettings.forms.map((form: any, idx: number) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-3 rounded border border-gray-200 hover:border-blue-300 transition-colors">
                         <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
                           <input 
