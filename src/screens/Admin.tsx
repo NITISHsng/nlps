@@ -3,7 +3,7 @@
 import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { LogOut, PlusCircle, Save, Trash2 } from 'lucide-react';
+import { LogOut, PlusCircle, Save, Trash2, FileText } from 'lucide-react';
 
 // #region --- Interfaces ---
 interface Notice {
