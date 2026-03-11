@@ -194,44 +194,46 @@ export default function Admissions() {
               <p className="text-blue-100 mb-6">
                 Get the official admission form and start your journey with us
               </p>
-              <div className="w-full max-w-4xl mx-auto space-y-6">
+              <div className="w-full max-w-5xl mx-auto space-y-6">
                 {Array.isArray(admissionSettings?.forms) && admissionSettings.forms.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {Object.entries(
                       admissionSettings.forms.reduce((acc: any, form: any) => {
                         const className = form.target_class || 'General';
                         if (!acc[className]) acc[className] = { admission: null, demo: null };
-                        if (form.name.toLowerCase().includes('admission')) acc[className].admission = form;
-                        else acc[className].demo = form;
+                        if (form.name === 'Admission Form') acc[className].admission = form;
+                        else if (form.name === 'Fill-up Demo') acc[className].demo = form;
                         return acc;
                       }, {})
-                    ).map(([className, classData]: [string, any]) => (
-                      <div key={className} className="bg-blue-800/40 p-5 rounded-2xl border border-blue-700/50 backdrop-blur-sm shadow-xl">
-                        <h3 className="text-lg font-bold text-white mb-4 border-b border-blue-700/50 pb-2">{className}</h3>
-                        <div className="space-y-3">
+                    ).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true })).map(([className, classData]: [string, any]) => (
+                      <div key={className} className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-2xl hover:bg-white/15 transition-all group">
+                        <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                           <h3 className="text-2xl font-black text-white tracking-tight">{className}</h3>
+                           <div className="bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-[10px] font-black text-blue-300 uppercase tracking-widest">Available</div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {classData.admission ? (
-                            <a href={classData.admission.url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 w-full px-5 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all flex items-center gap-3 shadow-lg group">
-                              <Download className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
-                              <span className="flex-1 text-left">Admission Form</span>
-                              <FileText className="w-4 h-4 text-blue-300" />
+                            <a href={classData.admission.url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 px-4 py-4 rounded-2xl font-bold hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/btn transform hover:-translate-y-1">
+                              <Download className="w-6 h-6 text-blue-600 group-hover/btn:scale-110 transition-transform" />
+                              <span className="text-xs uppercase tracking-widest">Admission Form</span>
                             </a>
                           ) : (
-                            <div className="bg-blue-900/30 text-blue-400 w-full px-5 py-3 rounded-xl border border-blue-800 border-dashed flex items-center gap-3 italic text-sm">
-                              <Download className="w-5 h-5 opacity-30" />
-                              Admission Form Not Available
+                            <div className="bg-white/5 text-white/30 px-4 py-4 rounded-2xl border border-white/10 border-dashed flex flex-col items-center justify-center gap-2 grayscale brightness-50">
+                              <Download className="w-6 h-6 opacity-20" />
+                              <span className="text-[10px] uppercase font-bold tracking-widest text-center">Form N/A</span>
                             </div>
                           )}
                           
                           {classData.demo ? (
-                            <a href={classData.demo.url} target="_blank" rel="noopener noreferrer" className="bg-blue-700/50 text-white w-full px-5 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center gap-3 border border-white/20 shadow-lg group">
-                              <Download className="w-5 h-5 text-blue-200 group-hover:scale-110 transition-transform" />
-                              <span className="flex-1 text-left">Fill-up Demo (How to fill)</span>
-                              <AlertCircle className="w-4 h-4 text-blue-300" />
+                            <a href={classData.demo.url} target="_blank" rel="noopener noreferrer" className="bg-amber-500 text-amber-950 px-4 py-4 rounded-2xl font-bold hover:bg-amber-400 transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/demo transform hover:-translate-y-1">
+                              <AlertCircle className="w-6 h-6 text-amber-900 group-hover/demo:scale-110 transition-transform" />
+                              <span className="text-xs uppercase tracking-widest">Fill-up Demo</span>
                             </a>
                           ) : (
-                            <div className="bg-blue-900/30 text-blue-400 w-full px-5 py-3 rounded-xl border border-blue-800 border-dashed flex items-center gap-3 italic text-sm">
-                              <Download className="w-5 h-5 opacity-30" />
-                              Demo PDF Not Available
+                            <div className="bg-white/5 text-white/30 px-4 py-4 rounded-2xl border border-white/10 border-dashed flex flex-col items-center justify-center gap-2 grayscale brightness-50">
+                              <AlertCircle className="w-6 h-6 opacity-20" />
+                              <span className="text-[10px] uppercase font-bold tracking-widest text-center">Demo N/A</span>
                             </div>
                           )}
                         </div>
