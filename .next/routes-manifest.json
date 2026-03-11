@@ -1,7 +1,7 @@
 {
   "version": 3,
   "pages404": true,
-  "appType": "hybrid",
+  "appType": "app",
   "caseSensitive": false,
   "basePath": "",
   "redirects": [
@@ -29,6 +29,12 @@
       "namedRegex": "^/(?:/)?$"
     },
     {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
       "page": "/_not-found",
       "regex": "^/_not\\-found(?:/)?$",
       "routeKeys": {},
@@ -41,22 +47,10 @@
       "namedRegex": "^/about(?:/)?$"
     },
     {
-      "page": "/About",
-      "regex": "^/About(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/About(?:/)?$"
-    },
-    {
       "page": "/academics",
       "regex": "^/academics(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/academics(?:/)?$"
-    },
-    {
-      "page": "/Academics",
-      "regex": "^/Academics(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Academics(?:/)?$"
     },
     {
       "page": "/admin",
@@ -65,22 +59,10 @@
       "namedRegex": "^/admin(?:/)?$"
     },
     {
-      "page": "/Admin",
-      "regex": "^/Admin(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Admin(?:/)?$"
-    },
-    {
       "page": "/admissions",
       "regex": "^/admissions(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admissions(?:/)?$"
-    },
-    {
-      "page": "/Admissions",
-      "regex": "^/Admissions(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Admissions(?:/)?$"
     },
     {
       "page": "/contact",
@@ -89,22 +71,10 @@
       "namedRegex": "^/contact(?:/)?$"
     },
     {
-      "page": "/Contact",
-      "regex": "^/Contact(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Contact(?:/)?$"
-    },
-    {
       "page": "/facilities",
       "regex": "^/facilities(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/facilities(?:/)?$"
-    },
-    {
-      "page": "/Facilities",
-      "regex": "^/Facilities(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Facilities(?:/)?$"
     },
     {
       "page": "/faculty",
@@ -113,34 +83,10 @@
       "namedRegex": "^/faculty(?:/)?$"
     },
     {
-      "page": "/Faculty",
-      "regex": "^/Faculty(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Faculty(?:/)?$"
-    },
-    {
       "page": "/gallery",
       "regex": "^/gallery(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/gallery(?:/)?$"
-    },
-    {
-      "page": "/Gallery",
-      "regex": "^/Gallery(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Gallery(?:/)?$"
-    },
-    {
-      "page": "/Home",
-      "regex": "^/Home(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/Home(?:/)?$"
-    },
-    {
-      "page": "/NoticeBoard",
-      "regex": "^/NoticeBoard(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/NoticeBoard(?:/)?$"
     },
     {
       "page": "/notices",
@@ -153,12 +99,6 @@
       "regex": "^/student\\-life(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/student\\-life(?:/)?$"
-    },
-    {
-      "page": "/StudentLife",
-      "regex": "^/StudentLife(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/StudentLife(?:/)?$"
     }
   ],
   "dataRoutes": [],
