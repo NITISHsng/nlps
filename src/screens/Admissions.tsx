@@ -206,16 +206,54 @@ export default function Admissions() {
                         return acc;
                       }, {})
                     ).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true })).map(([className, classData]: [string, any]) => (
-                      <div key={className} className="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-2xl hover:bg-white/15 transition-all group">
-                        <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
-                           <h3 className="text-2xl font-black text-white tracking-tight">{className}</h3>
-                           <div className="bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-[10px] font-black text-blue-300 uppercase tracking-widest">Available</div>
+                      <div key={className} className={`p-6 rounded-3xl border shadow-2xl transition-all group ${
+                        classData.admission?.is_open 
+                        ? 'bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15' 
+                        : 'bg-black/20 border-white/5 opacity-80 grayscale-[0.5]'
+                      }`}>
+                        <div className="flex flex-col mb-6 border-b border-white/10 pb-4">
+                           <div className="flex items-center justify-between mb-2">
+                             <h3 className="text-2xl font-black text-white tracking-tight">{className}</h3>
+                             <div className={`px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+                               classData.admission?.is_open 
+                               ? 'bg-green-500/20 border-green-400/30 text-green-300' 
+                               : 'bg-red-500/20 border-red-400/30 text-red-300'
+                             }`}>
+                               {classData.admission?.is_open ? 'Admission Open' : 'Admission Closed'}
+                             </div>
+                           </div>
+                           {(classData.admission?.start_date || classData.admission?.end_date) && (
+                             <div className="flex items-center gap-3 text-[11px] font-bold">
+                               {classData.admission?.start_date && (
+                                 <div className="flex items-center gap-1.5 text-blue-300">
+                                   <Clock className="w-3 h-3" />
+                                   <span>FROM: {new Date(classData.admission.start_date).toLocaleString()}</span>
+                                 </div>
+                               )}
+                               {classData.admission?.end_date && (
+                                 <div className="flex items-center gap-1.5 text-red-300 border-l border-white/10 pl-3">
+                                   <Clock className="w-3 h-3" />
+                                   <span>UNTIL: {new Date(classData.admission.end_date).toLocaleString()}</span>
+                                 </div>
+                               )}
+                             </div>
+                           )}
                         </div>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {classData.admission ? (
-                            <a href={classData.admission.url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 px-4 py-4 rounded-2xl font-bold hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/btn transform hover:-translate-y-1">
-                              <Download className="w-6 h-6 text-blue-600 group-hover/btn:scale-110 transition-transform" />
+                            <a 
+                              href={classData.admission.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className={`px-4 py-4 rounded-2xl font-bold transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/btn ${
+                                classData.admission?.is_open 
+                                ? 'bg-white text-blue-900 hover:bg-blue-50 transform hover:-translate-y-1' 
+                                : 'bg-white/5 text-white/20 cursor-not-allowed grayscale'
+                              }`}
+                              onClick={(e) => !classData.admission?.is_open && e.preventDefault()}
+                            >
+                              <Download className={`w-6 h-6 ${classData.admission?.is_open ? 'text-blue-600 group-hover/btn:scale-110 transition-transform' : 'opacity-20'}`} />
                               <span className="text-xs uppercase tracking-widest">Admission Form</span>
                             </a>
                           ) : (
@@ -226,8 +264,18 @@ export default function Admissions() {
                           )}
                           
                           {classData.demo ? (
-                            <a href={classData.demo.url} target="_blank" rel="noopener noreferrer" className="bg-amber-500 text-amber-950 px-4 py-4 rounded-2xl font-bold hover:bg-amber-400 transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/demo transform hover:-translate-y-1">
-                              <AlertCircle className="w-6 h-6 text-amber-900 group-hover/demo:scale-110 transition-transform" />
+                            <a 
+                              href={classData.demo.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className={`px-4 py-4 rounded-2xl font-bold transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/demo ${
+                                classData.admission?.is_open 
+                                ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 transform hover:-translate-y-1' 
+                                : 'bg-amber-500/10 text-amber-500/20 cursor-not-allowed grayscale'
+                              }`}
+                              onClick={(e) => !classData.admission?.is_open && e.preventDefault()}
+                            >
+                              <AlertCircle className={`w-6 h-6 ${classData.admission?.is_open ? 'text-amber-900 group-hover/demo:scale-110 transition-transform' : 'opacity-20'}`} />
                               <span className="text-xs uppercase tracking-widest">Fill-up Demo</span>
                             </a>
                           ) : (
@@ -248,12 +296,7 @@ export default function Admissions() {
                   </div>
                 )}
                 
-                <div className="mt-12 pt-8 border-t border-blue-700/50 flex flex-col items-center gap-4">
-                  <p className="text-blue-200 font-medium">Prefer online application?</p>
-                  <button className="bg-white text-blue-900 px-10 py-4 rounded-full font-black hover:bg-blue-50 transition-all transform hover:scale-105 shadow-2xl tracking-tight uppercase">
-                    Apply Online Now
-                  </button>
-                </div>
+
               </div>
             </div>
           </div>

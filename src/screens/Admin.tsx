@@ -23,7 +23,7 @@ interface AdmissionSettings {
   end_date: string | null;
   announcement_text: string | null;
   form_url?: string | null;
-  forms?: { name: string, url: string, target_class?: string }[];
+  forms?: { name: string, url: string, target_class?: string, is_open?: boolean, start_date?: string, end_date?: string }[];
 }
 
 interface Facility {
