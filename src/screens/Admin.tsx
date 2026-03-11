@@ -560,53 +560,83 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  <div className="space-y-3 mb-4">
-                    {(!Array.isArray(admissionSettings.forms) || admissionSettings.forms.length === 0) && (
-                      <p className="text-sm text-gray-500 italic bg-white p-3 rounded border border-dashed text-center">No forms uploaded yet.</p>
-                    )}
-                    {Array.isArray(admissionSettings.forms) && admissionSettings.forms.map((form: any, idx: number) => (
-                      <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-3 rounded border border-gray-200 hover:border-blue-300 transition-colors">
-                        <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
-                          <input 
-                            type="text" 
-                            value={form.target_class || ''} 
-                            placeholder="Class (e.g. Class XI)"
-                            onChange={(e) => {
-                              const newForms = [...(admissionSettings.forms || [])];
-                              newForms[idx].target_class = e.target.value;
-                              setAdmissionSettings({...admissionSettings, forms: newForms});
-                            }}
-                            className="w-full sm:w-1/3 text-xs font-bold text-blue-700 border-none px-2 py-1 focus:ring-2 focus:ring-blue-500 rounded bg-blue-50/50 uppercase tracking-wider"
-                          />
-                          <input 
-                            type="text" 
-                            value={form.name} 
-                            placeholder="Form Name"
-                            onChange={(e) => {
-                              const newForms = [...(admissionSettings.forms || [])];
-                              newForms[idx].name = e.target.value;
-                              setAdmissionSettings({...admissionSettings, forms: newForms});
-                            }}
-                            className="w-full sm:flex-1 text-sm font-semibold text-gray-800 border-none px-2 py-1 focus:ring-2 focus:ring-blue-500 rounded bg-gray-50 placeholder-gray-400"
-                          />
-                        </div>
-                        <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 px-2 sm:px-0 border-t sm:border-none pt-2 sm:pt-0 border-gray-100">
-                          <a href={form.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm font-semibold flex-1 sm:flex-none">View PDF</a>
-                          <button 
-                            onClick={() => {
-                              const newForms = [...(admissionSettings.forms || [])];
-                              newForms.splice(idx, 1);
-                              setAdmissionSettings({...admissionSettings, forms: newForms});
-                            }} 
-                            className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors" 
-                            title="Remove form"
-                          >
-                            ✖
-                          </button>
-                        </div>
+                  {(() => {
+                    const forms = Array.isArray(admissionSettings.forms) ? admissionSettings.forms : [];
+                    const grouped: Record<string, any[]> = forms.reduce((acc, f) => {
+                      const c = f.target_class || 'General';
+                      if (!acc[c]) acc[c] = [];
+                      acc[c].push({ ...f });
+                      return acc;
+                    }, {} as Record<string, any[]>);
+
+                    return (
+                      <div className="space-y-6 mb-4">
+                        {forms.length === 0 && (
+                          <p className="text-sm text-gray-500 italic bg-white p-3 rounded border border-dashed text-center">No forms uploaded yet.</p>
+                        )}
+                        {Object.entries(grouped).map(([className, classForms]) => (
+                          <div key={className} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                              <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">{className} ({classForms.length}/2)</span>
+                              {classForms.length >= 2 && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">MAX REACHED</span>}
+                            </div>
+                            <div className="divide-y divide-gray-100">
+                              {classForms.map((form: any) => {
+                                // Find global index to update state correctly
+                                const globalIdx = forms.findIndex(f => f.url === form.url);
+                                return (
+                                  <div key={form.url} className="p-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:bg-gray-50/50 transition-colors">
+                                    <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
+                                      <input 
+                                        type="text" 
+                                        value={form.target_class || ''} 
+                                        placeholder="Class"
+                                        onChange={(e) => {
+                                          const newClassName = e.target.value;
+                                          const countInNewClass = forms.filter(f => (f.target_class || 'General') === (newClassName || 'General')).length;
+                                          if (countInNewClass >= 2 && (form.target_class || 'General') !== (newClassName || 'General')) {
+                                            toast.error(`Cannot move to ${newClassName}. Maximum 2 forms allowed per class.`);
+                                            return;
+                                          }
+                                          const newForms = [...forms];
+                                          newForms[globalIdx].target_class = newClassName;
+                                          setAdmissionSettings({...admissionSettings, forms: newForms});
+                                        }}
+                                        className="w-full sm:w-32 text-xs font-bold text-blue-700 border border-transparent px-2 py-1 focus:ring-1 focus:ring-blue-500 rounded bg-blue-50/30 uppercase"
+                                      />
+                                      <input 
+                                        type="text" 
+                                        value={form.name} 
+                                        placeholder="Form Name"
+                                        onChange={(e) => {
+                                          const newForms = [...forms];
+                                          newForms[globalIdx].name = e.target.value;
+                                          setAdmissionSettings({...admissionSettings, forms: newForms});
+                                        }}
+                                        className="w-full sm:flex-1 text-sm font-semibold text-gray-800 border border-transparent px-2 py-1 focus:ring-1 focus:ring-blue-500 rounded bg-gray-50/50"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                                      <a href={form.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-bold uppercase">View</a>
+                                      <button 
+                                        onClick={() => {
+                                          const newForms = forms.filter((_, i) => i !== globalIdx);
+                                          setAdmissionSettings({...admissionSettings, forms: newForms});
+                                        }} 
+                                        className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded"
+                                      >
+                                        ✖
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })()}
 
                   <label className="flex flex-col items-center justify-center cursor-pointer bg-white border-2 border-dashed border-blue-300 rounded-lg p-4 text-center hover:bg-blue-50 transition-colors w-full group">
                     <span className="text-blue-600 font-semibold group-hover:text-blue-800 flex items-center gap-2">
@@ -615,10 +645,18 @@ export default function Admin() {
                     </span>
                     <input type="file" onChange={async e => {
                         if (e.target.files && e.target.files.length > 0) {
+                          // Check if 'General' (default) already has 2 forms
+                          const forms = Array.isArray(admissionSettings.forms) ? admissionSettings.forms : [];
+                          const generalCount = forms.filter(f => (f.target_class || 'General') === 'General').length;
+                          if (generalCount >= 2) {
+                            toast.error('The "General" category already has 2 forms. Please rename an existing class before adding more.');
+                            return;
+                          }
+
                           const url = await handlePdfUpload(e.target.files[0]);
                           if (url) {
                              const newForm = { name: 'New Admission Form', url: url, target_class: 'General' };
-                             setAdmissionSettings({ ...admissionSettings, forms: [...(admissionSettings.forms || []), newForm] });
+                             setAdmissionSettings({ ...admissionSettings, forms: [...forms, newForm] });
                           }
                         }
                     }} disabled={uploadingNoticePdf} className="hidden" accept="application/pdf"/>
