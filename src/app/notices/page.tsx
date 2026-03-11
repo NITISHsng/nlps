@@ -1,4 +1,4 @@
-import NoticeBoard from '@/pages/NoticeBoard';
+import NoticeBoard from '@/screens/NoticeBoard';
 
 export default function Page() {
   return <NoticeBoard />;
