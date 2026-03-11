@@ -194,50 +194,65 @@ export default function Admissions() {
               <p className="text-blue-100 mb-6">
                 Get the official admission form and start your journey with us
               </p>
-              <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto">
+              <div className="w-full max-w-4xl mx-auto space-y-6">
                 {Array.isArray(admissionSettings?.forms) && admissionSettings.forms.length > 0 ? (
-                  <div className="w-full space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {Object.entries(
                       admissionSettings.forms.reduce((acc: any, form: any) => {
                         const className = form.target_class || 'General';
-                        if (!acc[className]) acc[className] = [];
-                        acc[className].push(form);
+                        if (!acc[className]) acc[className] = { admission: null, demo: null };
+                        if (form.name.toLowerCase().includes('admission')) acc[className].admission = form;
+                        else acc[className].demo = form;
                         return acc;
                       }, {})
-                    ).map(([className, forms]: [string, any]) => (
-                      <div key={className} className="bg-blue-800/40 p-4 rounded-xl border border-blue-700/50">
-                        <h3 className="text-sm font-bold uppercase tracking-widest text-blue-200 mb-3 text-left border-b border-blue-700/50 pb-2">{className}</h3>
-                        <div className="flex flex-wrap gap-3">
-                          {forms.map((form: any, idx: number) => (
-                            <a 
-                              key={idx} 
-                              href={form.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="bg-white text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-all flex items-center gap-2 shadow-sm text-sm"
-                            >
-                              <Download className="w-4 h-4" />
-                              <span className="truncate">{form.name}</span>
+                    ).map(([className, classData]: [string, any]) => (
+                      <div key={className} className="bg-blue-800/40 p-5 rounded-2xl border border-blue-700/50 backdrop-blur-sm shadow-xl">
+                        <h3 className="text-lg font-bold text-white mb-4 border-b border-blue-700/50 pb-2">{className}</h3>
+                        <div className="space-y-3">
+                          {classData.admission ? (
+                            <a href={classData.admission.url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 w-full px-5 py-3 rounded-xl font-bold hover:bg-blue-50 transition-all flex items-center gap-3 shadow-lg group">
+                              <Download className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
+                              <span className="flex-1 text-left">Admission Form</span>
+                              <FileText className="w-4 h-4 text-blue-300" />
                             </a>
-                          ))}
+                          ) : (
+                            <div className="bg-blue-900/30 text-blue-400 w-full px-5 py-3 rounded-xl border border-blue-800 border-dashed flex items-center gap-3 italic text-sm">
+                              <Download className="w-5 h-5 opacity-30" />
+                              Admission Form Not Available
+                            </div>
+                          )}
+                          
+                          {classData.demo ? (
+                            <a href={classData.demo.url} target="_blank" rel="noopener noreferrer" className="bg-blue-700/50 text-white w-full px-5 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center gap-3 border border-white/20 shadow-lg group">
+                              <Download className="w-5 h-5 text-blue-200 group-hover:scale-110 transition-transform" />
+                              <span className="flex-1 text-left">Fill-up Demo (How to fill)</span>
+                              <AlertCircle className="w-4 h-4 text-blue-300" />
+                            </a>
+                          ) : (
+                            <div className="bg-blue-900/30 text-blue-400 w-full px-5 py-3 rounded-xl border border-blue-800 border-dashed flex items-center gap-3 italic text-sm">
+                              <Download className="w-5 h-5 opacity-30" />
+                              Demo PDF Not Available
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <button disabled className="bg-blue-800 text-blue-300 px-8 py-3 rounded-lg font-semibold cursor-not-allowed flex items-center space-x-2 border border-blue-700">
-                      <Download className="w-5 h-5 opacity-50" />
-                      <span>Forms Not Available Yet</span>
-                    </button>
+                  <div className="bg-blue-900/40 p-12 rounded-3xl border border-blue-700/50 text-center">
+                    <FileText className="w-16 h-16 mx-auto mb-4 text-blue-300 opacity-50" />
+                    <p className="text-xl font-semibold text-blue-100">Admission forms are not uploaded yet.</p>
+                    <p className="text-blue-300 text-sm mt-2 font-medium">Please check back later or visit the school office.</p>
                   </div>
                 )}
                 
-                <div className="w-full border-t border-blue-700/50 pt-6">
-                  <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-all">
-                    Apply Online
+                <div className="mt-12 pt-8 border-t border-blue-700/50 flex flex-col items-center gap-4">
+                  <p className="text-blue-200 font-medium">Prefer online application?</p>
+                  <button className="bg-white text-blue-900 px-10 py-4 rounded-full font-black hover:bg-blue-50 transition-all transform hover:scale-105 shadow-2xl tracking-tight uppercase">
+                    Apply Online Now
                   </button>
                 </div>
+              </div>
               </div>
             </div>
           </div>

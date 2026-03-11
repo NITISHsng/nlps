@@ -546,126 +546,104 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mt-6">
+                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                   <label className="block text-sm font-bold text-gray-700 mb-2">Announcement Text</label>
-                  <p className="text-xs text-gray-500 mb-3">Custom message displayed on the Admissions page (e.g., "Classes V to X - Limited Seats Available")</p>
-                  <textarea value={admissionSettings.announcement_text || ''} onChange={e => setAdmissionSettings({ ...admissionSettings, announcement_text: e.target.value })} className="p-3 border border-gray-300 rounded-lg w-full h-24 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter announcement text..."/>
+                  <p className="text-xs text-gray-500 mb-3">Custom message displayed on the Admissions page</p>
+                  <textarea value={admissionSettings.announcement_text || ''} onChange={e => setAdmissionSettings({ ...admissionSettings, announcement_text: e.target.value })} className="p-3 border border-gray-300 rounded-lg w-full h-24 focus:ring-2 focus:ring-blue-500 placeholder-gray-400" placeholder="Enter announcement text..."/>
                 </div>
 
-                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mt-6">
-                  <div className="flex justify-between items-center mb-4">
+                <div className="mt-8">
+                  <div className="flex justify-between items-center mb-6">
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-1">Admission Forms (PDFs)</label>
-                      <p className="text-xs text-gray-500">Upload multiple admission forms (General, Scholarship, etc.) for users to download.</p>
+                      <h4 className="text-lg font-bold text-gray-800">Class-wise Admission Forms</h4>
+                      <p className="text-sm text-gray-500">Each class can have one Admission Form and one Fill-up Demo.</p>
                     </div>
                   </div>
 
                   {(() => {
                     const forms = Array.isArray(admissionSettings.forms) ? admissionSettings.forms : [];
-                    const grouped: Record<string, any[]> = forms.reduce((acc, f) => {
-                      const c = f.target_class || 'General';
-                      if (!acc[c]) acc[c] = [];
-                      acc[c].push({ ...f });
-                      return acc;
-                    }, {} as Record<string, any[]>);
-
+                    const classNames = Array.from(new Set([...forms.map(f => f.target_class || 'General'), 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'])).filter(Boolean);
+                    
                     return (
-                      <div className="space-y-6 mb-4">
-                        {forms.length === 0 && (
-                          <p className="text-sm text-gray-500 italic bg-white p-3 rounded border border-dashed text-center">No forms uploaded yet.</p>
-                        )}
-                        {Object.entries(grouped).map(([className, classForms]) => (
-                          <div key={className} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex justify-between items-center">
-                              <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">{className} ({classForms.length}/2)</span>
-                              {classForms.length >= 2 && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">MAX REACHED</span>}
-                            </div>
-                            <div className="divide-y divide-gray-100">
-                              {classForms.map((form: any) => {
-                                // Find global index to update state correctly
-                                const globalIdx = forms.findIndex(f => f.url === form.url);
-                                return (
-                                  <div key={form.url} className="p-3 flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:bg-gray-50/50 transition-colors">
-                                    <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
-                                      <input 
-                                        type="text" 
-                                        value={form.target_class || ''} 
-                                        placeholder="Class"
-                                        onChange={(e) => {
-                                          const newClassName = e.target.value;
-                                          const countInNewClass = forms.filter(f => (f.target_class || 'General') === (newClassName || 'General')).length;
-                                          if (countInNewClass >= 2 && (form.target_class || 'General') !== (newClassName || 'General')) {
-                                            toast.error(`Cannot move to ${newClassName}. Maximum 2 forms allowed per class.`);
-                                            return;
-                                          }
-                                          const newForms = [...forms];
-                                          newForms[globalIdx].target_class = newClassName;
-                                          setAdmissionSettings({...admissionSettings, forms: newForms});
-                                        }}
-                                        className="w-full sm:w-32 text-xs font-bold text-blue-700 border border-transparent px-2 py-1 focus:ring-1 focus:ring-blue-500 rounded bg-blue-50/30 uppercase"
-                                      />
-                                      <input 
-                                        type="text" 
-                                        value={form.name} 
-                                        placeholder="Form Name"
-                                        onChange={(e) => {
-                                          const newForms = [...forms];
-                                          newForms[globalIdx].name = e.target.value;
-                                          setAdmissionSettings({...admissionSettings, forms: newForms});
-                                        }}
-                                        className="w-full sm:flex-1 text-sm font-semibold text-gray-800 border border-transparent px-2 py-1 focus:ring-1 focus:ring-blue-500 rounded bg-gray-50/50"
-                                      />
-                                    </div>
-                                    <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-                                      <a href={form.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs font-bold uppercase">View</a>
-                                      <button 
-                                        onClick={() => {
-                                          const newForms = forms.filter((_, i) => i !== globalIdx);
-                                          setAdmissionSettings({...admissionSettings, forms: newForms});
-                                        }} 
-                                        className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded"
-                                      >
-                                        ✖
-                                      </button>
-                                    </div>
+                      <div className="space-y-4">
+                        {classNames.map(className => {
+                          const admissionForm = forms.find(f => (f.target_class || 'General') === className && f.name.toLowerCase().includes('admission'));
+                          const demoForm = forms.find(f => (f.target_class || 'General') === className && f.name.toLowerCase().includes('demo'));
+
+                          const handleBoxUpload = async (type: 'Admission Form' | 'Fill-up Demo', file: File) => {
+                             const url = await handlePdfUpload(file);
+                             if (url) {
+                               const otherForms = forms.filter(f => !((f.target_class || 'General') === className && f.name === type));
+                               const newForms = [...otherForms, { name: type, url: url, target_class: className }];
+                               setAdmissionSettings({ ...admissionSettings, forms: newForms });
+                             }
+                          };
+
+                          const removeForm = (type: string) => {
+                             const newForms = forms.filter(f => !((f.target_class || 'General') === className && f.name === type));
+                             setAdmissionSettings({ ...admissionSettings, forms: newForms });
+                          };
+
+                          return (
+                            <div key={className} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                              <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+                                <span className="text-xs font-black text-gray-500 uppercase tracking-tighter">CATEGORY:</span>
+                                <span className="text-sm font-bold text-blue-900">{className}</span>
+                              </div>
+                              <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Admission Form Slot */}
+                                <div className={`p-3 rounded-lg border-2 border-dashed ${admissionForm ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-gray-50/30'}`}>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs font-bold text-gray-600 uppercase">Admission Form</span>
+                                    {admissionForm && <button onClick={() => removeForm('Admission Form')} className="text-red-500 hover:text-red-700 text-xs font-bold">REMOVE</button>}
                                   </div>
-                                );
-                              })}
+                                  {admissionForm ? (
+                                    <a href={admissionForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
+                                      <FileText size={16}/>
+                                      <span className="text-sm font-semibold truncate">View Uploaded Form</span>
+                                    </a>
+                                  ) : (
+                                    <label className="flex flex-col items-center justify-center cursor-pointer py-2">
+                                      <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded tracking-widest uppercase hover:bg-blue-200 transition-colors">
+                                        {uploadingNoticePdf ? '...' : 'UPLOAD PDF'}
+                                      </span>
+                                      <input type="file" className="hidden" accept="application/pdf" onChange={e => e.target.files?.[0] && handleBoxUpload('Admission Form', e.target.files[0])}/>
+                                    </label>
+                                  )}
+                                </div>
+
+                                {/* Demo Form Slot */}
+                                <div className={`p-3 rounded-lg border-2 border-dashed ${demoForm ? 'border-orange-200 bg-orange-50/30' : 'border-gray-200 bg-gray-50/30'}`}>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs font-bold text-gray-600 uppercase">Fill-up Demo</span>
+                                    {demoForm && <button onClick={() => removeForm('Fill-up Demo')} className="text-red-500 hover:text-red-700 text-xs font-bold">REMOVE</button>}
+                                  </div>
+                                  {demoForm ? (
+                                    <a href={demoForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
+                                      <FileText size={16}/>
+                                      <span className="text-sm font-semibold truncate">View Demo PDF</span>
+                                    </a>
+                                  ) : (
+                                    <label className="flex flex-col items-center justify-center cursor-pointer py-2">
+                                      <span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded tracking-widest uppercase hover:bg-orange-200 transition-colors">
+                                        {uploadingNoticePdf ? '...' : 'UPLOAD DEMO'}
+                                      </span>
+                                      <input type="file" className="hidden" accept="application/pdf" onChange={e => e.target.files?.[0] && handleBoxUpload('Fill-up Demo', e.target.files[0])}/>
+                                    </label>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     );
                   })()}
-
-                  <label className="flex flex-col items-center justify-center cursor-pointer bg-white border-2 border-dashed border-blue-300 rounded-lg p-4 text-center hover:bg-blue-50 transition-colors w-full group">
-                    <span className="text-blue-600 font-semibold group-hover:text-blue-800 flex items-center gap-2">
-                       <span className="text-xl leading-none mb-1">+</span> 
-                       {uploadingNoticePdf ? 'Uploading...' : 'Add New PDF Form (< 300KB)'}
-                    </span>
-                    <input type="file" onChange={async e => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          // Check if 'General' (default) already has 2 forms
-                          const forms = Array.isArray(admissionSettings.forms) ? admissionSettings.forms : [];
-                          const generalCount = forms.filter(f => (f.target_class || 'General') === 'General').length;
-                          if (generalCount >= 2) {
-                            toast.error('The "General" category already has 2 forms. Please rename an existing class before adding more.');
-                            return;
-                          }
-
-                          const url = await handlePdfUpload(e.target.files[0]);
-                          if (url) {
-                             const newForm = { name: 'New Admission Form', url: url, target_class: 'General' };
-                             setAdmissionSettings({ ...admissionSettings, forms: [...forms, newForm] });
-                          }
-                        }
-                    }} disabled={uploadingNoticePdf} className="hidden" accept="application/pdf"/>
-                  </label>
                 </div>
                 
-                <div className="flex justify-end pt-4">
-                  <button onClick={updateAdmissionSettings} className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors shadow-sm font-semibold">
-                    <Save size={20}/>Save Admission Settings
+                <div className="flex justify-end pt-8 border-t">
+                  <button onClick={updateAdmissionSettings} className="bg-blue-600 text-white px-8 py-4 rounded-xl flex items-center gap-3 hover:bg-blue-700 transition-all shadow-lg font-bold">
+                    <Save size={24}/> SAVE ALL ADMISSION SETTINGS
                   </button>
                 </div>
               </div>
