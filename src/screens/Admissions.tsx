@@ -194,21 +194,50 @@ export default function Admissions() {
               <p className="text-blue-100 mb-6">
                 Get the official admission form and start your journey with us
               </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                                {admissionSettings?.form_url ? (
-                   <a href={admissionSettings.form_url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 flex items-center space-x-2">
-                     <Download className="w-5 h-5" />
-                     <span>Download Form (PDF)</span>
-                   </a>
+              <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto">
+                {admissionSettings?.forms && admissionSettings.forms.length > 0 ? (
+                  <div className="w-full space-y-6">
+                    {Object.entries(
+                      admissionSettings.forms.reduce((acc: any, form: any) => {
+                        const className = form.target_class || 'General';
+                        if (!acc[className]) acc[className] = [];
+                        acc[className].push(form);
+                        return acc;
+                      }, {})
+                    ).map(([className, forms]: [string, any]) => (
+                      <div key={className} className="bg-blue-800/40 p-4 rounded-xl border border-blue-700/50">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-blue-200 mb-3 text-left border-b border-blue-700/50 pb-2">{className}</h3>
+                        <div className="flex flex-wrap gap-3">
+                          {forms.map((form: any, idx: number) => (
+                            <a 
+                              key={idx} 
+                              href={form.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="bg-white text-blue-900 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-all flex items-center gap-2 shadow-sm text-sm"
+                            >
+                              <Download className="w-4 h-4" />
+                              <span className="truncate">{form.name}</span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                   <button disabled className="bg-blue-800 text-blue-300 px-8 py-3 rounded-lg font-semibold cursor-not-allowed flex items-center space-x-2 border border-blue-700">
-                     <Download className="w-5 h-5 opacity-50" />
-                     <span>Form Not Available Yet</span>
-                   </button>
+                  <div className="flex flex-wrap justify-center gap-4">
+                    <button disabled className="bg-blue-800 text-blue-300 px-8 py-3 rounded-lg font-semibold cursor-not-allowed flex items-center space-x-2 border border-blue-700">
+                      <Download className="w-5 h-5 opacity-50" />
+                      <span>Forms Not Available Yet</span>
+                    </button>
+                  </div>
                 )}
-                <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-all transform hover:scale-105">
-                  Apply Online
-                </button>
+                
+                <div className="w-full border-t border-blue-700/50 pt-6">
+                  <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-all">
+                    Apply Online
+                  </button>
+                </div>
               </div>
             </div>
           </div>

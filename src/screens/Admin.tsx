@@ -23,7 +23,7 @@ interface AdmissionSettings {
   end_date: string | null;
   announcement_text: string | null;
   form_url?: string | null;
-  forms?: { name: string, url: string }[];
+  forms?: { name: string, url: string, target_class?: string }[];
 }
 
 interface Facility {
@@ -560,17 +560,28 @@ export default function Admin() {
                     )}
                     {(admissionSettings.forms || []).map((form: any, idx: number) => (
                       <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-3 rounded border border-gray-200 hover:border-blue-300 transition-colors">
-                        <div className="flex-1 w-full">
+                        <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
+                          <input 
+                            type="text" 
+                            value={form.target_class || ''} 
+                            placeholder="Class (e.g. Class XI)"
+                            onChange={(e) => {
+                              const newForms = [...(admissionSettings.forms || [])];
+                              newForms[idx].target_class = e.target.value;
+                              setAdmissionSettings({...admissionSettings, forms: newForms});
+                            }}
+                            className="w-full sm:w-1/3 text-xs font-bold text-blue-700 border-none px-2 py-1 focus:ring-2 focus:ring-blue-500 rounded bg-blue-50/50 uppercase tracking-wider"
+                          />
                           <input 
                             type="text" 
                             value={form.name} 
-                            placeholder="Form Name (e.g. Class V - X Admission Form)"
+                            placeholder="Form Name"
                             onChange={(e) => {
                               const newForms = [...(admissionSettings.forms || [])];
                               newForms[idx].name = e.target.value;
                               setAdmissionSettings({...admissionSettings, forms: newForms});
                             }}
-                            className="w-full text-sm font-semibold text-gray-800 border-none px-2 py-1 focus:ring-2 focus:ring-blue-500 rounded bg-gray-50 placeholder-gray-400"
+                            className="w-full sm:flex-1 text-sm font-semibold text-gray-800 border-none px-2 py-1 focus:ring-2 focus:ring-blue-500 rounded bg-gray-50 placeholder-gray-400"
                           />
                         </div>
                         <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 px-2 sm:px-0 border-t sm:border-none pt-2 sm:pt-0 border-gray-100">
@@ -600,7 +611,7 @@ export default function Admin() {
                         if (e.target.files && e.target.files.length > 0) {
                           const url = await handlePdfUpload(e.target.files[0]);
                           if (url) {
-                             const newForm = { name: 'New Admission Form', url: url };
+                             const newForm = { name: 'New Admission Form', url: url, target_class: 'General' };
                              setAdmissionSettings({ ...admissionSettings, forms: [...(admissionSettings.forms || []), newForm] });
                           }
                         }
