@@ -3,7 +3,7 @@
 import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { LogOut, PlusCircle, Save, Trash2, FileText } from 'lucide-react';
+import { LogOut, PlusCircle, Save, Trash2, FileText, Download } from 'lucide-react';
 
 // #region --- Interfaces ---
 interface Notice {
@@ -23,7 +23,8 @@ interface AdmissionSettings {
   end_date: string | null;
   announcement_text: string | null;
   form_url?: string | null;
-  forms?: { name: string, url: string, target_class?: string, is_open?: boolean, start_date?: string, end_date?: string }[];
+  forms?: { name: string, url: string, target_class?: string }[];
+  class_configs?: { [key: string]: { is_open: boolean, start_date: string, end_date: string } };
 }
 
 interface Facility {
@@ -199,15 +200,17 @@ export default function Admin() {
         try { processedForms = JSON.parse(processedForms); } catch (e) { processedForms = []; }
       }
       if (!Array.isArray(processedForms)) processedForms = [];
-      setAdmissionSettings({ ...data, forms: processedForms });
+      
+      const classConfigs = data.class_configs || {};
+      setAdmissionSettings({ ...data, forms: processedForms, class_configs: classConfigs });
     } else {
       console.warn('Load admissions error:', error?.message);
       const { data: newData, error: insertError } = await supabase.from('admissions_settings').insert({ is_open: false }).select().single();
       if (newData) {
-        setAdmissionSettings(newData);
+        setAdmissionSettings({ ...newData, class_configs: {} });
       } else {
         console.error('Insert admissions error:', insertError?.message);
-        setAdmissionSettings({ id: 'dummy', is_open: false, start_date: '', end_date: '', announcement_text: '', form_url: '', forms: [] });
+        setAdmissionSettings({ id: 'dummy', is_open: false, start_date: '', end_date: '', announcement_text: '', form_url: '', forms: [], class_configs: {} });
       }
     }
   }
@@ -562,13 +565,20 @@ export default function Admin() {
 
                   {(() => {
                     const forms = Array.isArray(admissionSettings.forms) ? admissionSettings.forms : [];
+                    const classConfigs = admissionSettings.class_configs || {};
                     const classNames = Array.from(new Set([...forms.map(f => f.target_class || 'General'), 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'])).filter(Boolean);
                     
                     return (
-                      <div className="space-y-4">
+                      <div className="space-y-6">
                         {classNames.map(className => {
                           const admissionForm = forms.find(f => (f.target_class || 'General') === className && f.name.toLowerCase().includes('admission'));
                           const demoForm = forms.find(f => (f.target_class || 'General') === className && f.name.toLowerCase().includes('demo'));
+                          const config = classConfigs[className] || { is_open: false, start_date: '', end_date: '' };
+
+                          const updateConfig = (updates: any) => {
+                            const newConfigs = { ...classConfigs, [className]: { ...config, ...updates } };
+                            setAdmissionSettings({ ...admissionSettings, class_configs: newConfigs });
+                          };
 
                           const handleBoxUpload = async (type: 'Admission Form' | 'Fill-up Demo', file: File) => {
                              const url = await handlePdfUpload(file);
@@ -585,52 +595,105 @@ export default function Admin() {
                           };
 
                           return (
-                            <div key={className} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                              <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
-                                <span className="text-xs font-black text-gray-500 uppercase tracking-tighter">CATEGORY:</span>
-                                <span className="text-sm font-bold text-blue-900">{className}</span>
-                              </div>
-                              <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Admission Form Slot */}
-                                <div className={`p-3 rounded-lg border-2 border-dashed ${admissionForm ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-gray-50/30'}`}>
-                                  <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xs font-bold text-gray-600 uppercase">Admission Form</span>
-                                    {admissionForm && <button onClick={() => removeForm('Admission Form')} className="text-red-500 hover:text-red-700 text-xs font-bold">REMOVE</button>}
+                            <div key={className} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold tracking-tighter">
+                                    {(className.match(/\d+/) || ['G'])[0]}
                                   </div>
-                                  {admissionForm ? (
-                                    <a href={admissionForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
-                                      <FileText size={16}/>
-                                      <span className="text-sm font-semibold truncate">View Uploaded Form</span>
-                                    </a>
-                                  ) : (
-                                    <label className="flex flex-col items-center justify-center cursor-pointer py-2">
-                                      <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded tracking-widest uppercase hover:bg-blue-200 transition-colors">
-                                        {uploadingNoticePdf ? '...' : 'UPLOAD PDF'}
-                                      </span>
-                                      <input type="file" className="hidden" accept="application/pdf" onChange={e => e.target.files?.[0] && handleBoxUpload('Admission Form', e.target.files[0])}/>
-                                    </label>
-                                  )}
+                                  <h5 className="font-bold text-gray-900 text-lg">{className}</h5>
+                                </div>
+                                <div className="flex items-center gap-4 bg-white p-1.5 rounded-xl border border-gray-200">
+                                  <span className={`text-[10px] font-black px-3 py-1 rounded-lg ${config.is_open ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                    {config.is_open ? 'OPEN' : 'CLOSED'}
+                                  </span>
+                                  <button 
+                                    onClick={() => updateConfig({ is_open: !config.is_open })}
+                                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${config.is_open ? 'bg-blue-600' : 'bg-gray-200'}`}
+                                  >
+                                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${config.is_open ? 'translate-x-5' : 'translate-x-0'}`} />
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="p-6">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                                  <div className="space-y-2">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Admission Start</label>
+                                    <input 
+                                      type="datetime-local" 
+                                      value={config.start_date || ''} 
+                                      onChange={(e) => updateConfig({ start_date: e.target.value })}
+                                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-inner"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Admission End</label>
+                                    <input 
+                                      type="datetime-local" 
+                                      value={config.end_date || ''} 
+                                      onChange={(e) => updateConfig({ end_date: e.target.value })}
+                                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-inner"
+                                    />
+                                  </div>
                                 </div>
 
-                                {/* Demo Form Slot */}
-                                <div className={`p-3 rounded-lg border-2 border-dashed ${demoForm ? 'border-orange-200 bg-orange-50/30' : 'border-gray-200 bg-gray-50/30'}`}>
-                                  <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xs font-bold text-gray-600 uppercase">Fill-up Demo</span>
-                                    {demoForm && <button onClick={() => removeForm('Fill-up Demo')} className="text-red-500 hover:text-red-700 text-xs font-bold">REMOVE</button>}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className={`p-5 rounded-2xl border-2 border-dashed transition-all ${admissionForm ? 'border-green-200 bg-green-50/50' : 'border-gray-200 bg-gray-50/30'}`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                      <div className="flex items-center gap-2">
+                                        <FileText size={16} className="text-gray-400" />
+                                        <span className="text-xs font-black text-gray-600 uppercase tracking-widest">Admission Form</span>
+                                      </div>
+                                      {admissionForm && <button onClick={() => removeForm('Admission Form')} className="text-red-500 hover:text-red-700 text-[10px] font-black uppercase">Remove</button>}
+                                    </div>
+                                    {admissionForm ? (
+                                      <a href={admissionForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm border border-green-100 hover:border-green-300 transition-all text-blue-600 font-bold">
+                                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600"><Download size={18} /></div>
+                                        <div className="flex-1 min-w-0 text-left">
+                                           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Status</div>
+                                           <div className="text-sm truncate">View Form</div>
+                                        </div>
+                                      </a>
+                                    ) : (
+                                      <label className="flex flex-col items-center justify-center cursor-pointer py-4 border border-blue-100 bg-blue-50/30 rounded-2xl hover:bg-white transition-all">
+                                        <PlusCircle size={20} className="text-blue-400 mb-2" />
+                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Upload PDF</span>
+                                        <input type="file" className="hidden" accept="application/pdf" onChange={e => {
+                                          const file = e.target.files?.[0];
+                                          if (file) handleBoxUpload('Admission Form', file);
+                                        }}/>
+                                      </label>
+                                    )}
                                   </div>
-                                  {demoForm ? (
-                                    <a href={demoForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
-                                      <FileText size={16}/>
-                                      <span className="text-sm font-semibold truncate">View Demo PDF</span>
-                                    </a>
-                                  ) : (
-                                    <label className="flex flex-col items-center justify-center cursor-pointer py-2">
-                                      <span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded tracking-widest uppercase hover:bg-orange-200 transition-colors">
-                                        {uploadingNoticePdf ? '...' : 'UPLOAD DEMO'}
-                                      </span>
-                                      <input type="file" className="hidden" accept="application/pdf" onChange={e => e.target.files?.[0] && handleBoxUpload('Fill-up Demo', e.target.files[0])}/>
-                                    </label>
-                                  )}
+
+                                  <div className={`p-5 rounded-2xl border-2 border-dashed transition-all ${demoForm ? 'border-orange-200 bg-orange-50/50' : 'border-gray-200 bg-gray-50/30'}`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                      <div className="flex items-center gap-2">
+                                        <FileText size={16} className="text-gray-400" />
+                                        <span className="text-xs font-black text-gray-600 uppercase tracking-widest">Fill-up Demo</span>
+                                      </div>
+                                      {demoForm && <button onClick={() => removeForm('Fill-up Demo')} className="text-red-500 hover:text-red-700 text-[10px] font-black uppercase">Remove</button>}
+                                    </div>
+                                    {demoForm ? (
+                                      <a href={demoForm.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm border border-orange-100 hover:border-orange-300 transition-all text-orange-600 font-bold">
+                                        <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600"><Download size={18} /></div>
+                                        <div className="flex-1 min-w-0 text-left">
+                                           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Status</div>
+                                           <div className="text-sm truncate">View Demo</div>
+                                        </div>
+                                      </a>
+                                    ) : (
+                                      <label className="flex flex-col items-center justify-center cursor-pointer py-4 border border-orange-100 bg-orange-50/30 rounded-2xl hover:bg-white transition-all">
+                                        <PlusCircle size={20} className="text-orange-400 mb-2" />
+                                        <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Upload Demo</span>
+                                        <input type="file" className="hidden" accept="application/pdf" onChange={e => {
+                                          const file = e.target.files?.[0];
+                                          if (file) handleBoxUpload('Fill-up Demo', file);
+                                        }}/>
+                                      </label>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -639,6 +702,7 @@ export default function Admin() {
                       </div>
                     );
                   })()}
+
                 </div>
                 
                 <div className="flex justify-end pt-8 border-t">

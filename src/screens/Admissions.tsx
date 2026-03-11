@@ -1,5 +1,5 @@
 "use client";
-import { CheckCircle, FileText, Download, Calendar, AlertCircle } from 'lucide-react';
+import { CheckCircle, FileText, Download, Calendar, AlertCircle, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -9,7 +9,14 @@ export default function Admissions() {
   useEffect(() => {
     async function loadSettings() {
       const { data } = await supabase.from('admissions_settings').select('*').limit(1).single();
-      if (data) setAdmissionSettings(data);
+      if (data) {
+        let processedForms = data.forms;
+        if (typeof processedForms === 'string') {
+          try { processedForms = JSON.parse(processedForms); } catch (e) { processedForms = []; }
+        }
+        if (!Array.isArray(processedForms)) processedForms = [];
+        setAdmissionSettings({ ...data, forms: processedForms });
+      }
     }
     loadSettings();
   }, []);
@@ -77,19 +84,89 @@ export default function Admissions() {
         </div>
       </div>
 
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-white">
+      <section className="py-12 bg-gray-50/50">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-8">
-            <div className={`text-white p-6 rounded-lg inline-block ${admissionSettings?.is_open ? 'bg-blue-900' : 'bg-gray-600'}`}>
-              <AlertCircle className="w-12 h-12 mx-auto mb-3" />
-              <h2 className="text-2xl font-bold mb-2">
-                {admissionSettings?.is_open ? 'Admissions Now Open!' : 'Admissions Currently Closed'}
-              </h2>
-              {admissionSettings?.announcement_text && (
-                <p className={`${admissionSettings?.is_open ? 'text-blue-100' : 'text-gray-200'} whitespace-pre-line`}>
-                  {admissionSettings.announcement_text}
-                </p>
-              )}
+          <div className="max-w-6xl mx-auto">
+            {admissionSettings?.announcement_text && (
+              <div className="mb-10 bg-blue-50 border border-blue-100 p-6 rounded-3xl flex items-center gap-6 shadow-sm">
+                <div className="bg-blue-600 text-white p-3 rounded-2xl shadow-lg ring-4 ring-blue-100">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1 block">OFFICIAL ANNOUNCEMENT</span>
+                  <p className="text-blue-900 text-sm font-semibold leading-relaxed whitespace-pre-line text-left">
+                    {admissionSettings.announcement_text}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {(() => {
+                const forms = Array.isArray(admissionSettings?.forms) ? admissionSettings.forms : [];
+                const classConfigs = admissionSettings?.class_configs || {};
+                const classNames = Array.from(new Set([...forms.map((f: any) => f.target_class || 'General'), 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'])).filter(Boolean);
+                
+                return classNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(className => {
+                  const config = classConfigs[className] || { is_open: false, start_date: '', end_date: '' };
+                  const now = new Date();
+                  const start = config.start_date ? new Date(config.start_date) : null;
+                  const end = config.end_date ? new Date(config.end_date) : null;
+                  
+                  let status: 'OPEN' | 'CLOSED' | 'UPCOMING' = 'CLOSED';
+                  if (config.is_open) {
+                    if (start && now < start) status = 'UPCOMING';
+                    else if (end && now > end) status = 'CLOSED';
+                    else status = 'OPEN';
+                  }
+
+                  return (
+                    <div key={className} className={`p-5 rounded-3xl border-2 transition-all duration-300 ${
+                      status === 'OPEN' ? 'bg-white border-green-100 shadow-green-100 shadow-xl' :
+                      status === 'UPCOMING' ? 'bg-white border-blue-100 shadow-blue-100 shadow-lg' :
+                      'bg-gray-50 border-gray-100 opacity-60'
+                    }`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${
+                          status === 'OPEN' ? 'bg-green-100 text-green-700' :
+                          status === 'UPCOMING' ? 'bg-blue-100 text-blue-700' :
+                          'bg-gray-200 text-gray-500'
+                        }`}>
+                          {className.replace(/[^0-9]/g, '') || (className === 'General' ? 'G' : className[0])}
+                        </div>
+                        <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black tracking-widest border ${
+                          status === 'OPEN' ? 'border-green-200 text-green-600 uppercase' :
+                          status === 'UPCOMING' ? 'border-blue-200 text-blue-600 uppercase' :
+                          'border-gray-200 text-gray-400 uppercase'
+                        }`}>
+                          {status}
+                        </div>
+                      </div>
+                      
+                      <h4 className="font-black text-gray-900 mb-2 truncate uppercase tracking-tight">{className}</h4>
+                      
+                      <div className="space-y-1 mt-auto">
+                        {status === 'OPEN' ? (
+                          <div className="flex flex-col">
+                            <span className="text-[10px] text-green-600 font-bold uppercase tracking-tighter">Closing At:</span>
+                            <span className="text-xs font-black text-gray-700">{end ? end.toLocaleDateString() + ' ' + end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Continuous'}</span>
+                          </div>
+                        ) : status === 'UPCOMING' ? (
+                          <div className="flex flex-col">
+                            <span className="text-[10px] text-blue-600 font-bold uppercase tracking-tighter">Opening On:</span>
+                            <span className="text-xs font-black text-gray-700">{start ? start.toLocaleDateString() + ' ' + start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'TBA'}</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col">
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Status:</span>
+                            <span className="text-xs font-black text-gray-400">Not Accepting</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         </div>
@@ -194,110 +271,103 @@ export default function Admissions() {
               <p className="text-blue-100 mb-6">
                 Get the official admission form and start your journey with us
               </p>
-              <div className="w-full max-w-5xl mx-auto space-y-6">
+<div className="w-full max-w-6xl mx-auto space-y-12">
                 {Array.isArray(admissionSettings?.forms) && admissionSettings.forms.length > 0 ? (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {Object.entries(
                       admissionSettings.forms.reduce((acc: any, form: any) => {
                         const className = form.target_class || 'General';
-                        if (!acc[className]) acc[className] = { admission: null, demo: null };
+                        if (!acc[className]) acc[className] = { admission: null, demo: null, config: admissionSettings.class_configs?.[className] || { is_open: false, start_date: '', end_date: '' } };
                         if (form.name === 'Admission Form') acc[className].admission = form;
                         else if (form.name === 'Fill-up Demo') acc[className].demo = form;
                         return acc;
                       }, {})
-                    ).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true })).map(([className, classData]: [string, any]) => (
-                      <div key={className} className={`p-6 rounded-3xl border shadow-2xl transition-all group ${
-                        classData.admission?.is_open 
-                        ? 'bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15' 
-                        : 'bg-black/20 border-white/5 opacity-80 grayscale-[0.5]'
-                      }`}>
-                        <div className="flex flex-col mb-6 border-b border-white/10 pb-4">
-                           <div className="flex items-center justify-between mb-2">
-                             <h3 className="text-2xl font-black text-white tracking-tight">{className}</h3>
-                             <div className={`px-4 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${
-                               classData.admission?.is_open 
-                               ? 'bg-green-500/20 border-green-400/30 text-green-300' 
-                               : 'bg-red-500/20 border-red-400/30 text-red-300'
-                             }`}>
-                               {classData.admission?.is_open ? 'Admission Open' : 'Admission Closed'}
-                             </div>
-                           </div>
-                           {(classData.admission?.start_date || classData.admission?.end_date) && (
-                             <div className="flex items-center gap-3 text-[11px] font-bold">
-                               {classData.admission?.start_date && (
-                                 <div className="flex items-center gap-1.5 text-blue-300">
-                                   <Clock className="w-3 h-3" />
-                                   <span>FROM: {new Date(classData.admission.start_date).toLocaleString()}</span>
-                                 </div>
-                               )}
-                               {classData.admission?.end_date && (
-                                 <div className="flex items-center gap-1.5 text-red-300 border-l border-white/10 pl-3">
-                                   <Clock className="w-3 h-3" />
-                                   <span>UNTIL: {new Date(classData.admission.end_date).toLocaleString()}</span>
-                                 </div>
-                               )}
-                             </div>
-                           )}
-                        </div>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {classData.admission ? (
-                            <a 
-                              href={classData.admission.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className={`px-4 py-4 rounded-2xl font-bold transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/btn ${
-                                classData.admission?.is_open 
-                                ? 'bg-white text-blue-900 hover:bg-blue-50 transform hover:-translate-y-1' 
-                                : 'bg-white/5 text-white/20 cursor-not-allowed grayscale'
-                              }`}
-                              onClick={(e) => !classData.admission?.is_open && e.preventDefault()}
-                            >
-                              <Download className={`w-6 h-6 ${classData.admission?.is_open ? 'text-blue-600 group-hover/btn:scale-110 transition-transform' : 'opacity-20'}`} />
-                              <span className="text-xs uppercase tracking-widest">Admission Form</span>
-                            </a>
-                          ) : (
-                            <div className="bg-white/5 text-white/30 px-4 py-4 rounded-2xl border border-white/10 border-dashed flex flex-col items-center justify-center gap-2 grayscale brightness-50">
-                              <Download className="w-6 h-6 opacity-20" />
-                              <span className="text-[10px] uppercase font-bold tracking-widest text-center">Form N/A</span>
-                            </div>
-                          )}
+                    ).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true })).map(([className, classData]: [string, any]) => {
+                      const now = new Date();
+                      const start = classData.config.start_date ? new Date(classData.config.start_date) : null;
+                      const end = classData.config.end_date ? new Date(classData.config.end_date) : null;
+                      
+                      let status: 'OPEN' | 'CLOSED' | 'UPCOMING' = 'CLOSED';
+                      if (classData.config.is_open) {
+                        if (start && now < start) status = 'UPCOMING';
+                        else if (end && now > end) status = 'CLOSED';
+                        else status = 'OPEN';
+                      }
+
+                      return (
+                        <div key={className} className="bg-white/10 backdrop-blur-xl rounded-[2.5rem] border border-white/20 p-8 flex flex-col items-center text-center group hover:bg-white/[0.15] transition-all duration-500 shadow-2xl relative overflow-hidden">
+                          {/* Status Badge */}
+                          <div className={`absolute top-6 right-6 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                            status === 'OPEN' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
+                            status === 'UPCOMING' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' :
+                            'bg-red-500/20 text-red-300 border-red-500/30'
+                          }`}>
+                            {status}
+                          </div>
+
+                          <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-glow ${
+                            status === 'OPEN' ? 'bg-green-500/20' : status === 'UPCOMING' ? 'bg-blue-500/20' : 'bg-red-500/20'
+                          }`}>
+                            <FileText className={`w-10 h-10 ${
+                              status === 'OPEN' ? 'text-green-400' : status === 'UPCOMING' ? 'text-blue-400' : 'text-red-400'
+                            }`} />
+                          </div>
+
+                          <h3 className="text-3xl font-black text-white mb-2">{className}</h3>
                           
-                          {classData.demo ? (
-                            <a 
-                              href={classData.demo.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className={`px-4 py-4 rounded-2xl font-bold transition-all flex flex-col items-center justify-center gap-2 shadow-xl group/demo ${
-                                classData.admission?.is_open 
-                                ? 'bg-amber-500 text-amber-950 hover:bg-amber-400 transform hover:-translate-y-1' 
-                                : 'bg-amber-500/10 text-amber-500/20 cursor-not-allowed grayscale'
-                              }`}
-                              onClick={(e) => !classData.admission?.is_open && e.preventDefault()}
-                            >
-                              <AlertCircle className={`w-6 h-6 ${classData.admission?.is_open ? 'text-amber-900 group-hover/demo:scale-110 transition-transform' : 'opacity-20'}`} />
-                              <span className="text-xs uppercase tracking-widest">Fill-up Demo</span>
-                            </a>
+                          {status === 'OPEN' ? (
+                            <p className="text-green-300 text-xs font-bold uppercase tracking-widest mb-8">Admission is Live</p>
+                          ) : status === 'UPCOMING' ? (
+                            <div className="mb-8">
+                              <p className="text-blue-200 text-xs font-bold uppercase tracking-widest">Opening On</p>
+                              <p className="text-white text-sm font-medium">{start?.toLocaleDateString()} {start?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                            </div>
                           ) : (
-                            <div className="bg-white/5 text-white/30 px-4 py-4 rounded-2xl border border-white/10 border-dashed flex flex-col items-center justify-center gap-2 grayscale brightness-50">
-                              <AlertCircle className="w-6 h-6 opacity-20" />
-                              <span className="text-[10px] uppercase font-bold tracking-widest text-center">Demo N/A</span>
+                            <div className="mb-8">
+                              <p className="text-red-300 text-xs font-bold uppercase tracking-widest">Admissions Closed</p>
+                              {end && <p className="text-white/60 text-xs mt-1">Ended: {end.toLocaleDateString()}</p>}
                             </div>
                           )}
+
+                          <div className="w-full space-y-3 mt-auto">
+                            {status === 'OPEN' ? (
+                              <>
+                                {classData.admission ? (
+                                  <a href={classData.admission.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full bg-white text-blue-900 py-4 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-blue-50 transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl">
+                                    <Download size={18} />
+                                    Admission Form
+                                  </a>
+                                ) : (
+                                  <div className="py-4 text-white/30 text-xs font-bold uppercase border border-white/10 rounded-2xl border-dashed">Form Not Ready</div>
+                                )}
+                                
+                                {classData.demo ? (
+                                  <a href={classData.demo.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3 w-full bg-amber-500 text-amber-950 py-4 rounded-2xl font-black text-sm uppercase tracking-wider hover:bg-amber-400 transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl">
+                                    <FileText size={18} />
+                                    How to Fill
+                                  </a>
+                                ) : null}
+                              </>
+                            ) : (
+                              <div className="py-12 px-6 bg-white/5 rounded-3xl border border-white/10 flex flex-col items-center gap-3">
+                                <AlertCircle className="w-8 h-8 text-white/20" />
+                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em]">Contact Office for Information</p>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
-                  <div className="bg-blue-900/40 p-12 rounded-3xl border border-blue-700/50 text-center">
-                    <FileText className="w-16 h-16 mx-auto mb-4 text-blue-300 opacity-50" />
-                    <p className="text-xl font-semibold text-blue-100">Admission forms are not uploaded yet.</p>
-                    <p className="text-blue-300 text-sm mt-2 font-medium">Please check back later or visit the school office.</p>
+                  <div className="bg-blue-900/40 p-12 rounded-[3.5rem] border border-blue-700/50 text-center backdrop-blur-md">
+                    <FileText className="w-16 h-16 mx-auto mb-6 text-blue-400 opacity-50" />
+                    <h3 className="text-2xl font-bold text-white mb-2">No Admission Notices</h3>
+                    <p className="text-blue-200">Please visit our school campus for current admission availability.</p>
                   </div>
                 )}
-                
-
               </div>
+
             </div>
           </div>
         </div>
