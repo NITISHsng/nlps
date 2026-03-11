@@ -1,3 +1,4 @@
+"use client";
 import { CheckCircle, FileText, Download, Calendar, AlertCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';

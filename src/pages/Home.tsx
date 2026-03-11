@@ -1,5 +1,6 @@
+"use client";
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Users, BookOpen, Computer, Calendar, CheckCircle, Utensils } from 'lucide-react';
 import Hero from '../components/Hero';
 import { supabase } from '../lib/supabase';
@@ -124,7 +125,7 @@ export default function Home() {
 
           <div className="text-center">
             <Link
-              to="/notices"
+              href="/notices"
               className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all transform hover:scale-105"
             >
               View All Notices
@@ -166,7 +167,7 @@ export default function Home() {
           </div>
           
           <div className="text-center mt-8">
-            <Link to="/facilities" className="inline-block border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 hover:text-white transition-all transform hover:scale-105">View All Facilities</Link>
+            <Link href="/facilities" className="inline-block border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 hover:text-white transition-all transform hover:scale-105">View All Facilities</Link>
           </div>
         </div>
       </section>
@@ -189,7 +190,7 @@ export default function Home() {
               ))}
             </div>
             <div className="text-center mt-8">
-              <Link to="/gallery" className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all transform hover:scale-105">View Full Gallery</Link>
+              <Link href="/gallery" className="inline-block bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all transform hover:scale-105">View Full Gallery</Link>
             </div>
           </div>
         </section>
@@ -229,14 +230,14 @@ export default function Home() {
             <div className="flex flex-wrap justify-center gap-4">
               {admissionsOpen && (
                 <Link
-                  to="/admissions"
+                  href="/admissions"
                   className="bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition-all transform hover:scale-105 shadow-lg"
                 >
                   Apply Now
                 </Link>
               )}
               <Link
-                to="/contact"
+                href="/contact"
                 className="border-2 border-blue-900 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 hover:text-white transition-all transform hover:scale-105"
               >
                 Contact Us

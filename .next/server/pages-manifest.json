@@ -1,0 +1,17 @@
+{
+  "/About": "pages/About.html",
+  "/Academics": "pages/Academics.html",
+  "/Admin": "pages/Admin.html",
+  "/Admissions": "pages/Admissions.html",
+  "/Contact": "pages/Contact.html",
+  "/Facilities": "pages/Facilities.html",
+  "/Faculty": "pages/Faculty.html",
+  "/Gallery": "pages/Gallery.html",
+  "/Home": "pages/Home.html",
+  "/NoticeBoard": "pages/NoticeBoard.html",
+  "/StudentLife": "pages/StudentLife.html",
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js",
+  "/404": "pages/404.html"
+}

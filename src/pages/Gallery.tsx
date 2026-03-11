@@ -1,3 +1,4 @@
+"use client";
 import { Image as ImageIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';

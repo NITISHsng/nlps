@@ -1,3 +1,4 @@
+"use client";
 import { BookOpen, Calendar, Download, AlertCircle, Trophy, CheckCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';

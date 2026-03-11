@@ -1,11 +1,13 @@
+"use client";
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -29,7 +31,7 @@ export default function Header() {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-3 group">
             <img src="/logo.png" alt="NLPS Badigachh Logo" className="h-10 w-10 scale-120 overflow-hidden rounded-full bg-white object-contain p-1 shadow" />
             <div>
               <h1 className="text-xl font-bold leading-tight">NLPS BADIGACHH</h1>
@@ -39,11 +41,11 @@ export default function Header() {
 
           <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => {
-              const isActive = location.pathname === link.path;
+              const isActive = pathname === link.path;
               return (
                 <Link
                   key={link.path}
-                  to={link.path}
+                  href={link.path}
                   className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-amber-200 ${isActive ? 'text-amber-200' : 'text-white'}`}
                 >
                   <motion.span
@@ -90,7 +92,7 @@ export default function Header() {
                   transition={{ delay: i * 0.05 }}
                 >
                   <Link
-                    to={link.path}
+                    href={link.path}
                     onClick={() => setIsMenuOpen(false)}
                     className="block px-4 py-2 text-sm font-medium hover:bg-[#1c2c54] rounded-md transition-colors"
                   >

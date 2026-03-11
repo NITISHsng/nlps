@@ -1,0 +1,6 @@
+__turbopack_load_page_chunks__("/StudentLife", [
+  "static/chunks/6b0d17ee83c21b3d.js",
+  "static/chunks/d7224a7fc14c9759.js",
+  "static/chunks/b7e48605766f04dc.js",
+  "static/chunks/turbopack-c73ecc9d517d4221.js"
+])

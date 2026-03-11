@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
@@ -20,14 +20,14 @@ export default function Hero() {
 
           <div className="flex flex-wrap gap-4">
             <Link
-              to="/admissions"
+              href="/admissions"
               className="bg-white text-[#0b2545] px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 flex items-center space-x-2 shadow-lg"
             >
               <span>Admissions Open</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              to="/contact"
+              href="/contact"
               className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#0b2545] transition-all transform hover:scale-105"
             >
               Contact Us

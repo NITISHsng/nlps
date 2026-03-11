@@ -1,0 +1,107 @@
+{
+  "pages": {
+    "/About": [
+      "static/chunks/0ec9ff2925d1cca4.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/turbopack-0bb840585d08c21e.js"
+    ],
+    "/Academics": [
+      "static/chunks/cddcaf41e72a0f38.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-4534ac7f3224f63a.js"
+    ],
+    "/Admin": [
+      "static/chunks/f6aa2158836c6111.js",
+      "static/chunks/5dfcdd843a752640.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/turbopack-ed1359a18e27f8e0.js"
+    ],
+    "/Admissions": [
+      "static/chunks/92983a944edf43b1.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-884fd66c51afd307.js"
+    ],
+    "/Contact": [
+      "static/chunks/929e78297c989704.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/turbopack-3cb3ae2443885b27.js"
+    ],
+    "/Facilities": [
+      "static/chunks/680cb214bd37442c.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-7b92f7a78847f042.js"
+    ],
+    "/Faculty": [
+      "static/chunks/5a680f6c7d70516b.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-2088de7880a769fd.js"
+    ],
+    "/Gallery": [
+      "static/chunks/7d08de8b48783eb9.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/turbopack-da58b7e2d64a2040.js"
+    ],
+    "/Home": [
+      "static/chunks/88d0428fe0448de4.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-ecb8b850a21a4f66.js"
+    ],
+    "/NoticeBoard": [
+      "static/chunks/b2045c29b5f52f88.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/4c115963e78c25b5.js",
+      "static/chunks/turbopack-6857b5d0ce275f2f.js"
+    ],
+    "/StudentLife": [
+      "static/chunks/6b0d17ee83c21b3d.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/turbopack-c73ecc9d517d4221.js"
+    ],
+    "/_app": [
+      "static/chunks/d3dca951d75f207a.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/turbopack-b51873492059ee3b.js"
+    ],
+    "/_error": [
+      "static/chunks/1660df67e943edb9.js",
+      "static/chunks/d7224a7fc14c9759.js",
+      "static/chunks/b7e48605766f04dc.js",
+      "static/chunks/turbopack-35c6bd9018bb6e9d.js"
+    ]
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/a6dad97d9634a72d.js"
+  ],
+  "lowPriorityFiles": [
+    "static/s8XUCusKPUIiWyue2atoa/_ssgManifest.js",
+    "static/s8XUCusKPUIiWyue2atoa/_buildManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/68426aabd68b1e79.js",
+    "static/chunks/69f9e9aba97577b7.js",
+    "static/chunks/656908f260ad86ae.js",
+    "static/chunks/a29e2124feae6558.js",
+    "static/chunks/turbopack-2b027c437e535672.js"
+  ]
+}

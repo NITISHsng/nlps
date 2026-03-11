@@ -1,0 +1,182 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "hybrid",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
+      "page": "/About",
+      "regex": "^/About(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/About(?:/)?$"
+    },
+    {
+      "page": "/academics",
+      "regex": "^/academics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/academics(?:/)?$"
+    },
+    {
+      "page": "/Academics",
+      "regex": "^/Academics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Academics(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/Admin",
+      "regex": "^/Admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Admin(?:/)?$"
+    },
+    {
+      "page": "/admissions",
+      "regex": "^/admissions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admissions(?:/)?$"
+    },
+    {
+      "page": "/Admissions",
+      "regex": "^/Admissions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Admissions(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
+    },
+    {
+      "page": "/Contact",
+      "regex": "^/Contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Contact(?:/)?$"
+    },
+    {
+      "page": "/facilities",
+      "regex": "^/facilities(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/facilities(?:/)?$"
+    },
+    {
+      "page": "/Facilities",
+      "regex": "^/Facilities(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Facilities(?:/)?$"
+    },
+    {
+      "page": "/faculty",
+      "regex": "^/faculty(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/faculty(?:/)?$"
+    },
+    {
+      "page": "/Faculty",
+      "regex": "^/Faculty(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Faculty(?:/)?$"
+    },
+    {
+      "page": "/gallery",
+      "regex": "^/gallery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/gallery(?:/)?$"
+    },
+    {
+      "page": "/Gallery",
+      "regex": "^/Gallery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Gallery(?:/)?$"
+    },
+    {
+      "page": "/Home",
+      "regex": "^/Home(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Home(?:/)?$"
+    },
+    {
+      "page": "/NoticeBoard",
+      "regex": "^/NoticeBoard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/NoticeBoard(?:/)?$"
+    },
+    {
+      "page": "/notices",
+      "regex": "^/notices(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/notices(?:/)?$"
+    },
+    {
+      "page": "/student-life",
+      "regex": "^/student\\-life(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student\\-life(?:/)?$"
+    },
+    {
+      "page": "/StudentLife",
+      "regex": "^/StudentLife(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/StudentLife(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
