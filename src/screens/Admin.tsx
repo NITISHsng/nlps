@@ -22,6 +22,7 @@ interface AdmissionSettings {
   start_date: string | null;
   end_date: string | null;
   announcement_text: string | null;
+  form_url?: string | null;
 }
 
 interface Facility {
@@ -199,7 +200,7 @@ export default function Admin() {
         setAdmissionSettings(newData);
       } else {
         console.error('Insert admissions error:', insertError?.message);
-        setAdmissionSettings({ id: 'dummy', is_open: false, start_date: '', end_date: '', announcement_text: '' });
+        setAdmissionSettings({ id: 'dummy', is_open: false, start_date: '', end_date: '', announcement_text: '', form_url: '' });
       }
     }
   }
@@ -542,6 +543,30 @@ export default function Admin() {
                   <label className="block text-sm font-bold text-gray-700 mb-2">Announcement Text</label>
                   <p className="text-xs text-gray-500 mb-3">Custom message displayed on the Admissions page (e.g., "Classes V to X - Limited Seats Available")</p>
                   <textarea value={admissionSettings.announcement_text || ''} onChange={e => setAdmissionSettings({ ...admissionSettings, announcement_text: e.target.value })} className="p-3 border border-gray-300 rounded-lg w-full h-24 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter announcement text..."/>
+                </div>
+
+                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mt-6">
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Admission Form (PDF)</label>
+                  <p className="text-xs text-gray-500 mb-3">Upload the official admission form for users to download.</p>
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    {admissionSettings.form_url ? (
+                      <div className="flex items-center gap-3 bg-white p-3 rounded border w-full sm:w-auto">
+                         <span className="text-sm font-semibold text-green-700">✓ Form Uploaded</span>
+                         <a href={admissionSettings.form_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm font-semibold ml-auto">View Form</a>
+                         <button onClick={() => setAdmissionSettings({ ...admissionSettings, form_url: '' })} className="text-red-500 hover:text-red-700 ml-2" title="Remove form">✖</button>
+                      </div>
+                    ) : (
+                      <label className="flex-1 cursor-pointer bg-white border-2 border-dashed border-blue-300 rounded-lg p-3 text-center hover:bg-blue-50 transition-colors w-full">
+                        <span className="text-blue-600 font-semibold">{uploadingNoticePdf ? 'Uploading...' : 'Click to select PDF form (< 300KB)'}</span>
+                        <input type="file" onChange={async e => {
+                           if (e.target.files && e.target.files.length > 0) {
+                              const url = await handlePdfUpload(e.target.files[0]);
+                              if (url) setAdmissionSettings({ ...admissionSettings, form_url: url });
+                           }
+                        }} disabled={uploadingNoticePdf} className="hidden" accept="application/pdf"/>
+                      </label>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex justify-end pt-4">

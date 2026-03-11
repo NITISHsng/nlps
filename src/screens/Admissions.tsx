@@ -195,10 +195,17 @@ export default function Admissions() {
                 Get the official admission form and start your journey with us
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <button className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 flex items-center space-x-2">
-                  <Download className="w-5 h-5" />
-                  <span>Download Form (PDF)</span>
-                </button>
+                                {admissionSettings?.form_url ? (
+                   <a href={admissionSettings.form_url} target="_blank" rel="noopener noreferrer" className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 flex items-center space-x-2">
+                     <Download className="w-5 h-5" />
+                     <span>Download Form (PDF)</span>
+                   </a>
+                ) : (
+                   <button disabled className="bg-blue-800 text-blue-300 px-8 py-3 rounded-lg font-semibold cursor-not-allowed flex items-center space-x-2 border border-blue-700">
+                     <Download className="w-5 h-5 opacity-50" />
+                     <span>Form Not Available Yet</span>
+                   </button>
+                )}
                 <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-all transform hover:scale-105">
                   Apply Online
                 </button>
