@@ -255,7 +255,6 @@ export default function Admissions() {
                   </button>
                 </div>
               </div>
-              </div>
             </div>
           </div>
         </div>
