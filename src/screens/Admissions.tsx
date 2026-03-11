@@ -195,7 +195,7 @@ export default function Admissions() {
                 Get the official admission form and start your journey with us
               </p>
               <div className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto">
-                {admissionSettings?.forms && admissionSettings.forms.length > 0 ? (
+                {Array.isArray(admissionSettings?.forms) && admissionSettings.forms.length > 0 ? (
                   <div className="w-full space-y-6">
                     {Object.entries(
                       admissionSettings.forms.reduce((acc: any, form: any) => {
