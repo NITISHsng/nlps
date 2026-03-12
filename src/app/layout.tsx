@@ -6,8 +6,8 @@ import SocialSidebar from '@/components/SocialSidebar';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
-  title: 'Project',
-  description: 'University Project',
+  title: 'NLPS Badigachh High School',
+  description: 'NLPS Badigachh High School',
 };
 
 export default function RootLayout({

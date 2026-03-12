@@ -20,7 +20,23 @@ export default function Header() {
     { name: 'Gallery', path: '/gallery' },
     { name: 'Notice Board', path: '/notices' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Developers', path: '/developers' },
   ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: -20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
 
   return (
     <motion.header 
@@ -32,40 +48,52 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center space-x-3 group">
-            <img src="/logo.png" alt="NLPS Badigachh Logo" className="h-10 w-10 scale-120 overflow-hidden rounded-full bg-white object-contain p-1 shadow" />
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <img src="/logo.png" alt="NLPS Badigachh Logo" className="h-10 w-10 overflow-hidden rounded-full bg-white object-contain p-1 shadow" />
+            </motion.div>
             <div>
-              <h1 className="text-xl font-bold leading-tight">NLPS BADIGACHH</h1>
-              <p className="text-xs text-amber-200">HIGH SCHOOL</p>
+              <h1 className="text-xl font-bold leading-tight tracking-tight">NLPS BADIGACHH</h1>
+              <p className="text-xs text-amber-200 font-medium">HIGH SCHOOL</p>
             </div>
           </Link>
 
-          <nav className="hidden lg:flex items-center space-x-1">
+          <motion.nav 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="hidden lg:flex items-center space-x-1"
+          >
             {navLinks.map((link) => {
               const isActive = pathname === link.path;
               return (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-amber-200 ${isActive ? 'text-amber-200' : 'text-white'}`}
-                >
-                  <motion.span
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative z-10"
+                <motion.div key={link.path} variants={itemVariants}>
+                  <Link
+                    href={link.path}
+                    className={`relative px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-amber-200 ${isActive ? 'text-amber-200' : 'text-white'}`}
                   >
-                    {link.name}
-                  </motion.span>
-                  {isActive ? (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute inset-0 bg-white/10 rounded-md z-0"
-                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                    />
-                  ) : null}
-                </Link>
+                    <motion.span
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="relative z-10"
+                    >
+                      {link.name}
+                    </motion.span>
+                    {isActive ? (
+                      <motion.div
+                        layoutId="navbar-indicator"
+                        className="absolute inset-0 bg-white/10 rounded-md z-0"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
+                    ) : null}
+                  </Link>
+                </motion.div>
               );
             })}
-          </nav>
+          </motion.nav>
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
