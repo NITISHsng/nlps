@@ -117,7 +117,7 @@ export default function NoticeBoard() {
                     </div>
 
                     <h3 className="text-xl font-bold text-gray-900 mb-3">{notice.title}</h3>
-                    <p className="text-gray-700 leading-relaxed mb-4">{notice.description}</p>
+                    <p className="text-gray-700 leading-relaxed mb-4 whitespace-pre-wrap">{notice.description}</p>
 
                     {notice.pdf_url && (
                       <a

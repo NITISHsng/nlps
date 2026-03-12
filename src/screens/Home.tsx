@@ -118,7 +118,7 @@ export default function Home() {
                   </span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{notice.title}</h3>
-                <p className="text-gray-600 text-sm line-clamp-3">{notice.description}</p>
+                <p className="text-gray-600 text-sm line-clamp-4 whitespace-pre-wrap">{notice.description}</p>
               </div>
             ))}
           </div>

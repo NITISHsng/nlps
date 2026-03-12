@@ -3,8 +3,13 @@
 import { MapPin, Phone, Mail, Facebook, Twitter, Youtube } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
+
+  if (isAdmin) return null;
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
